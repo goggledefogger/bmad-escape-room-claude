@@ -87,14 +87,12 @@ export const SkipLinks: React.FC<SkipLinksProps> = ({ links, className }) => {
               className={cn(
                 // Base skip link styles
                 "skip-link",
-                "absolute left-[-9999px] top-[-9999px]",
+                "absolute m-4 -translate-x-full -translate-y-full",
                 "bg-gray-900 text-white px-4 py-2 rounded-md",
                 "text-sm font-medium",
-                "focus:left-4 focus:top-4 focus:z-[1001]",
-                "focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2",
-                "transition-all duration-150",
-                // Ensure it's visible when focused
-                "focus:relative focus:block"
+                "transition-transform duration-150 ease-in-out",
+                "focus:translate-x-0 focus:translate-y-0 focus:z-[1001]",
+                "focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
               )}
               onClick={(e) => {
                 e.preventDefault();
