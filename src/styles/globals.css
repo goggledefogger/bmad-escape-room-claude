@@ -133,10 +133,32 @@
     font-weight: 500;
     z-index: 1000;
     transition: top var(--duration-fast) ease;
+    max-width: calc(100vw - 2rem);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .skip-link:focus {
-    top: 6px;
+    top: max(6px, env(safe-area-inset-top));
+    left: max(6px, env(safe-area-inset-left));
+    max-width: calc(100vw - 2rem);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Skip links container */
+  .skip-links {
+    max-height: 100vh;
+    overflow: hidden;
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+  }
+
+  .skip-links:focus-within {
+    pointer-events: auto;
   }
 
   /* Screen reader only content */
