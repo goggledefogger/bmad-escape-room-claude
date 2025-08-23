@@ -1,0 +1,392 @@
+/**
+ * Global styles for BMad Escape Room
+ * Accessibility-first CSS with comprehensive support
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* OpenDyslexic font for accessibility (temporarily disabled to avoid 404) */
+/* TODO: Add OpenDyslexic font file to /public/fonts/ */
+/*
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/OpenDyslexic-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
+/* CSS Custom Properties for accessibility */
+:root {
+  /* Color palette */
+  --color-primary-50: #fef7ed;
+  --color-primary-900: #1e293b;
+  --color-secondary-50: #fef7ed;
+  --color-secondary-900: #1e293b;
+  --color-accent-600: #d4af37;
+
+  /* Font families */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Monaco', 'Cascadia Code', monospace;
+  --font-dyslexic: 'Comic Sans MS', 'Trebuchet MS', cursive;
+
+  /* Focus styles */
+  --focus-ring: 0 0 0 2px var(--color-accent-600);
+  --focus-ring-offset: 0 0 0 4px rgba(212, 175, 55, 0.2);
+
+  /* Animation durations */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+}
+
+/* Base layer customizations */
+@layer base {
+  /* HTML and body */
+  html {
+    scroll-behavior: smooth;
+    text-size-adjust: 100%;
+  }
+
+  /* Respect reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  body {
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Focus styles */
+  *:focus {
+    outline: none;
+  }
+
+  *:focus-visible {
+    outline: 2px solid var(--color-accent-600);
+    outline-offset: 2px;
+    box-shadow: var(--focus-ring), var(--focus-ring-offset);
+  }
+
+  /* Interactive elements */
+  button, a, input, select, textarea, [tabindex]:not([tabindex="-1"]) {
+    position: relative;
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    :root {
+      --color-primary-50: #ffffff;
+      --color-primary-900: #000000;
+      --color-secondary-50: #ffffff;
+      --color-secondary-900: #000000;
+      --color-accent-600: #ffff00;
+    }
+
+    button, a, input, select, textarea {
+      border: 2px solid currentColor !important;
+    }
+  }
+
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-primary-50: #0f172a;
+      --color-primary-900: #f8fafc;
+      --color-secondary-50: #1e293b;
+      --color-secondary-900: #f1f5f9;
+    }
+  }
+}
+
+/* Component layer */
+@layer components {
+  /* Skip links */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--color-primary-900);
+    color: var(--color-primary-50);
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    z-index: 1000;
+    transition: top var(--duration-fast) ease;
+  }
+
+  .skip-link:focus {
+    top: 6px;
+  }
+
+  /* Screen reader only content */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Touch targets */
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .touch-target-large {
+    min-width: 60px;
+    min-height: 60px;
+  }
+
+  /* Focus management */
+  .focus-trap {
+    outline: none;
+  }
+
+  .focus-visible-only:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+  }
+
+  /* Motion preferences */
+  .motion-reduce-friendly {
+    transition-duration: var(--duration-normal);
+    animation-duration: var(--duration-normal);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .motion-reduce-friendly {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+
+  /* Keyboard navigation enhancements */
+  .keyboard-navigation button:focus,
+  .keyboard-navigation a:focus,
+  .keyboard-navigation input:focus,
+  .keyboard-navigation select:focus,
+  .keyboard-navigation textarea:focus,
+  .keyboard-navigation [tabindex]:focus {
+    outline: 3px solid var(--color-accent-600) !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 6px rgba(212, 175, 55, 0.3) !important;
+  }
+
+  /* Screen reader optimizations */
+  .screen-reader-optimized {
+    /* Enhanced semantic structure */
+  }
+
+  .screen-reader-optimized h1,
+  .screen-reader-optimized h2,
+  .screen-reader-optimized h3,
+  .screen-reader-optimized h4,
+  .screen-reader-optimized h5,
+  .screen-reader-optimized h6 {
+    scroll-margin-top: 1rem;
+  }
+}
+
+/* Utility layer customizations */
+@layer utilities {
+  /* Font size utilities for accessibility */
+  .font-size-normal {
+    font-size: 1rem;
+  }
+
+  .font-size-large {
+    font-size: 1.125rem;
+  }
+
+  .font-size-extra-large {
+    font-size: 1.25rem;
+  }
+
+  /* Dyslexia-friendly font */
+  .dyslexic-font {
+    font-family: var(--font-dyslexic) !important;
+  }
+
+  /* High contrast mode */
+  .high-contrast {
+    filter: contrast(150%) brightness(110%);
+  }
+
+  .high-contrast * {
+    border-color: currentColor !important;
+  }
+
+  /* Reduced motion */
+  .reduce-motion,
+  .reduce-motion * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Force focus visible for keyboard users */
+  .force-focus-visible *:focus {
+    outline: 2px solid var(--color-accent-600) !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Container utilities */
+  .container {
+    width: 100%;
+    margin: 0 auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      max-width: 640px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .container {
+      max-width: 768px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      max-width: 1024px;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .container {
+      max-width: 1280px;
+    }
+  }
+}
+
+/* Print styles for accessibility */
+@media print {
+  .skip-link,
+  .sr-only {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0.5rem !important;
+    margin: 0.5rem 0 !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+    border: 1px solid #000 !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  a::after {
+    content: " (" attr(href) ")";
+  }
+
+  abbr[title]::after {
+    content: " (" attr(title) ")";
+  }
+}
+
+/* Loading states */
+.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: loading-shimmer 1.5s infinite;
+}
+
+@keyframes loading-shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading::after {
+    animation: none;
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Error states */
+.error-shake {
+  animation: error-shake 0.5s ease-in-out;
+}
+
+@keyframes error-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .error-shake {
+    animation: none;
+    background-color: #fee2e2;
+    border-color: #ef4444;
+  }
+}
+
+/* Success states */
+.success-pulse {
+  animation: success-pulse 0.6s ease-in-out;
+}
+
+@keyframes success-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .success-pulse {
+    animation: none;
+    background-color: #dcfce7;
+    border-color: #10b981;
+  }
+}

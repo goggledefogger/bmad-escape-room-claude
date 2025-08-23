@@ -1,0 +1,305 @@
+// This is your Prisma schema file for BMad Escape Room
+// Accessibility-focused database schema with comprehensive tracking
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Room session and progress tracking
+model RoomSession {
+  id        String   @id @default(cuid())
+  sessionId String   @unique
+  roomId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // User progress
+  currentPuzzle String?
+  totalTimeSeconds Int @default(0)
+  completedAt DateTime?
+  completionMethod String? // 'completed', 'timeout', 'abandoned'
+
+  // Scoring
+  baseScore Int @default(0)
+  timeBonus Int @default(0)
+  hintPenalty Int @default(0)
+  accessibilityBonus Int @default(0)
+  finalScore Int @default(0)
+
+  // Accessibility tracking
+  accessibilityFeatures Json @default("{}")
+  inputMethods String[] @default([])
+  assistiveTechnology String?
+  inactivityPauses Int @default(0)
+
+  // Performance metrics
+  errorCount Int @default(0)
+  hintsRequested Int @default(0)
+
+  // Relationships
+  puzzleStates PuzzleState[]
+  hintUsage HintUsage[]
+  analyticsEvents AnalyticsEvent[]
+
+  @@map("room_sessions")
+  @@index([roomId, createdAt])
+  @@index([accessibilityFeatures(path: "$.screenReader")])
+  @@index([completionMethod])
+}
+
+// Individual puzzle progress within sessions
+model PuzzleState {
+  id        String   @id @default(cuid())
+  sessionId String
+  puzzleId  String
+  status    String   // 'not_started', 'in_progress', 'completed', 'skipped'
+  attempts  Int      @default(0)
+
+  // Timing
+  startedAt   DateTime?
+  completedAt DateTime?
+  timeSpent   Int @default(0) // seconds
+
+  // Accessibility interaction data
+  inputMethod    String   // 'mouse', 'keyboard', 'touch', 'screen_reader'
+  errorCount     Int      @default(0)
+  hintsUsed      Int      @default(0)
+
+  // User inputs and interactions
+  userInputs Json @default("[]") // Array of input attempts
+
+  // Relationships
+  session RoomSession @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+
+  @@map("puzzle_states")
+  @@unique([sessionId, puzzleId])
+  @@index([puzzleId, status])
+  @@index([inputMethod])
+}
+
+// Hint usage tracking for accessibility analysis
+model HintUsage {
+  id        String   @id @default(cuid())
+  sessionId String
+  puzzleId  String
+  hintLevel Int      // 1-4 (nudge, hint, specific, reveal)
+  requestedAt DateTime @default(now())
+
+  // Accessibility context when hint was requested
+  accessibilityContext Json // Input method, assistive tech, etc.
+
+  // Effectiveness tracking
+  helpfulnessRating Int? // 1-5 user rating
+  timeToSolveAfterHint Int? // seconds, null if not solved
+  solvedAfterHint Boolean @default(false)
+
+  // Relationships
+  session RoomSession @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+
+  @@map("hint_usage")
+  @@index([puzzleId, hintLevel])
+  @@index([accessibilityContext(path: "$.inputMethod")])
+  @@index([requestedAt])
+}
+
+// Detailed interaction analytics for accessibility optimization
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  sessionId String
+  eventType String   // 'hotspot_click', 'hint_request', 'puzzle_attempt', 'navigation', 'error_recovery'
+  elementId String?
+  timestamp DateTime @default(now())
+
+  // Accessibility context
+  accessibilityContext Json // Complete context at time of event
+
+  // Event details
+  duration      Int?    // milliseconds
+  successful    Boolean
+  errorMessage  String?
+  assistiveTechnology String?
+
+  // Additional event data
+  eventData Json @default("{}")
+
+  // Relationships
+  session RoomSession @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+
+  @@map("analytics_events")
+  @@index([sessionId, timestamp])
+  @@index([eventType, timestamp])
+  @@index([accessibilityContext(path: "$.assistiveTech")], map: "analytics_events_assistive_tech_idx")
+  @@index([accessibilityContext(path: "$.inputMethod")], map: "analytics_events_input_method_idx")
+}
+
+// Room configuration and puzzle definitions
+model RoomConfiguration {
+  roomId      String   @id
+  name        String
+  description String?
+
+  // Game parameters
+  estimatedTimeMinutes Int
+  difficultyLevel Int // 1-5
+
+  // Accessibility features
+  accessibilityFeatures String[] // Array of supported features
+
+  // Puzzle configuration
+  puzzleSequence Json // Ordered list of puzzle configurations
+  randomizationConfig Json @default("{}")
+
+  // Metadata
+  theme String?
+  aesthetic String?
+  audioEnabled Boolean @default(true)
+  visualComplexity String @default("medium") // 'low', 'medium', 'high'
+  cognitiveLoad String @default("moderate") // 'light', 'moderate', 'heavy'
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  version String @default("1.0.0")
+
+  @@map("room_configurations")
+  @@index([difficultyLevel])
+  @@index([estimatedTimeMinutes])
+}
+
+// User feedback and accessibility ratings
+model UserFeedback {
+  id        String   @id @default(cuid())
+  sessionId String   @unique
+
+  // General feedback
+  rating Int // 1-5 stars
+  difficulty String // 'too_easy', 'just_right', 'too_hard'
+  wouldRecommend Boolean
+  comments String?
+
+  // Accessibility-specific feedback
+  accessibilityRating Int? // 1-5 for accessibility experience
+  screenReaderExperience Int? // 1-5 rating
+  keyboardNavigation Int? // 1-5 rating
+  visualDesign Int? // 1-5 rating
+  audioDescription Int? // 1-5 rating
+  overallInclusion Int? // 1-5 rating
+
+  // Improvement suggestions
+  suggestions String[] @default([])
+  accessibilityIssues String[] @default([])
+
+  // Metadata
+  submittedAt DateTime @default(now())
+  userAgent String?
+  accessibilityFeatures Json @default("{}")
+
+  @@map("user_feedback")
+  @@index([rating])
+  @@index([accessibilityRating])
+  @@index([submittedAt])
+}
+
+// Accessibility compliance tracking
+model AccessibilityAudit {
+  id String @id @default(cuid())
+  roomId String
+
+  // Audit details
+  auditDate DateTime @default(now())
+  wcagLevel String // 'A', 'AA', 'AAA'
+  toolsUsed String[] // Testing tools used
+  auditorName String?
+
+  // Results
+  overallScore Int // 0-100
+  violations Json @default("[]") // Array of violation objects
+  warnings Json @default("[]") // Array of warning objects
+  passes Json @default("[]") // Array of successful tests
+
+  // Categories
+  perceivableScore Int
+  operableScore Int
+  understandableScore Int
+  robustScore Int
+
+  // Status
+  status String @default("completed") // 'in_progress', 'completed', 'failed'
+  notes String?
+
+  @@map("accessibility_audits")
+  @@index([roomId, auditDate])
+  @@index([wcagLevel])
+  @@index([overallScore])
+}
+
+// Aggregated analytics for reporting
+model DailyAnalytics {
+  id String @id @default(cuid())
+  date DateTime @unique @db.Date
+  roomId String
+
+  // Session metrics
+  totalSessions Int @default(0)
+  completedSessions Int @default(0)
+  abandondedSessions Int @default(0)
+  averageCompletionTime Float? // minutes
+
+  // Accessibility metrics
+  screenReaderUsers Int @default(0)
+  keyboardOnlyUsers Int @default(0)
+  highContrastUsers Int @default(0)
+  reducedMotionUsers Int @default(0)
+  touchUsers Int @default(0)
+
+  // Performance metrics
+  averageHintsUsed Float @default(0)
+  averageErrorRate Float @default(0)
+  averageScore Float @default(0)
+
+  // User satisfaction
+  averageRating Float?
+  averageAccessibilityRating Float?
+  totalFeedbackResponses Int @default(0)
+
+  // Calculated at end of day
+  calculatedAt DateTime @default(now())
+
+  @@map("daily_analytics")
+  @@index([date, roomId])
+  @@index([roomId])
+}
+
+// User preferences (for returning users - future feature)
+model UserPreferences {
+  id String @id @default(cuid())
+  userId String @unique // From auth system
+
+  // Accessibility preferences
+  accessibilitySettings Json @default("{}")
+
+  // Game preferences
+  preferredDifficulty String?
+  preferredSessionLength String? // 'short', 'medium', 'long'
+  hintsEnabled Boolean @default(true)
+  audioEnabled Boolean @default(true)
+
+  // Progress tracking
+  completedRooms String[] @default([])
+  bestScores Json @default("{}")
+  totalPlayTime Int @default(0) // minutes
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  lastActive DateTime @default(now())
+
+  @@map("user_preferences")
+  @@index([userId])
+  @@index([lastActive])
+}
