@@ -1,0 +1,170 @@
+# BMad Escape Room Project .gitignore
+# Generated for React/TypeScript PWA with Node.js backend and BMad methodology
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+.npm
+.yarn-integrity
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.nuxt/
+.vuepress/dist/
+
+# TypeScript
+*.tsbuildinfo
+*.d.ts.map
+
+# React/Frontend specific
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# PWA specific
+sw.js
+workbox-*.js
+manifest.json.map
+
+# Testing
+coverage/
+*.lcov
+.nyc_output
+junit.xml
+test-results/
+playwright-report/
+test-results.xml
+
+# IDEs and editors
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Serverless deployment artifacts
+.serverless/
+.aws-sam/
+.chalice/
+.sls/
+
+# Analytics and monitoring
+.vercel
+.netlify/
+
+# Accessibility testing artifacts
+axe-reports/
+accessibility-audit-*.html
+lighthouse-reports/
+
+# BMad methodology working files (keep generated docs)
+.bmad-temp/
+.ai/debug-log.md
+.bmad-working/
+
+# Keep BMad core structure and generated documentation
+!.bmad-core/
+!docs/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+tmp/
+temp/
+.cache/
+
+# Asset optimization
+.imageoptim-cache/
+
+# Storybook
+storybook-static/
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+
+# Local configuration
+.local
+.config/local.*
+
+# Package manager locks (uncomment the one you're NOT using)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Generated types and schemas
+generated/
+auto-generated/
+
+# Documentation builds (keep source markdown)
+docs/build/
+docs/.docusaurus/
+
+# Security
+.secrets
+*.pem
+*.key
+!.env.example
+
+# Performance monitoring
+.lightouse/
+bundle-analyzer-report.html
+speed-measure-plugin.json
+
+# Escape room content working files
+content-drafts/
+puzzle-iterations/
+room-assets-raw/
+
+# Audio/visual assets (large files - use Git LFS if needed)
+*.wav
+*.mp3
+*.mp4
+*.mov
+*.avi
+assets/audio/raw/
+assets/video/raw/
