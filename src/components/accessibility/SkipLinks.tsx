@@ -74,7 +74,7 @@ export const SkipLinks: React.FC<SkipLinksProps> = ({ links, className }) => {
   return (
     <nav
       className={cn(
-        "skip-links fixed left-0 top-0 z-[1000] p-4 max-h-screen overflow-hidden",
+        "skip-links fixed left-0 top-0 z-[1000] p-2 pointer-events-none",
         className
       )}
       aria-label="Skip navigation"
@@ -90,13 +90,11 @@ export const SkipLinks: React.FC<SkipLinksProps> = ({ links, className }) => {
                 "absolute left-[-9999px] top-[-9999px]",
                 "bg-gray-900 text-white px-4 py-2 rounded-md",
                 "text-sm font-medium",
-                "focus:left-4 focus:top-4 focus:z-[1001]",
+                "focus:left-0 focus:top-0 focus:z-[1001]",
                 "focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2",
                 "transition-all duration-150",
-                // Ensure it's visible when focused and doesn't extend above viewport
-                "focus:relative focus:block focus:max-w-[calc(100vw-2rem)] focus:break-words",
-                // Safe area for mobile devices
-                "focus:top-[max(0.5rem,env(safe-area-inset-top))] focus:left-[max(0.5rem,env(safe-area-inset-left))]"
+                // Ensure it's visible when focused and properly positioned
+                "focus:relative focus:block focus:max-w-[calc(100vw-1rem)] focus:min-h-[44px] focus:flex focus:items-center focus:pointer-events-auto"
               )}
               onClick={(e) => {
                 e.preventDefault();

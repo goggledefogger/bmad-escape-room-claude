@@ -88,7 +88,7 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({
   // Debug overlay for development
   const DebugOverlay = enableDebug ? () => (
     <div
-      className="fixed bottom-4 right-4 z-50 bg-gray-900 text-white p-4 rounded-lg shadow-lg font-mono text-xs max-w-xs border border-gray-700 max-h-[calc(100vh-2rem)] overflow-y-auto"
+      className="fixed bottom-4 right-4 z-50 bg-gray-900 text-white p-4 rounded-lg shadow-lg font-mono text-xs max-w-xs border border-gray-700"
       role="region"
       aria-label="Accessibility Debug Information"
     >
