@@ -11,33 +11,45 @@ import { useAccessibility } from "@/hooks/useAccessibility";
 import { TicketModal } from "@/components/room/TicketModal";
 import { TimetableModal } from "@/components/room/TimetableModal";
 import { SuitcaseLockModal } from "@/components/room/SuitcaseLockModal";
+import { PunchCardOverlayModal } from "@/components/room/PunchCardOverlayModal";
 
 export default function NightTrainCompartmentRoom() {
   const [gameStarted, setGameStarted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const accessibility = useAccessibility();
 
-  // Modal states
+    // Modal states
   const [ticketModalOpen, setTicketModalOpen] = useState(false);
   const [timetableModalOpen, setTimetableModalOpen] = useState(false);
   const [suitcaseModalOpen, setSuitcaseModalOpen] = useState(false);
+  const [punchCardModalOpen, setPunchCardModalOpen] = useState(false);
 
   // Puzzle progress states
   const [suitcaseUnlocked, setSuitcaseUnlocked] = useState(false);
   const [hasViewedTicket, setHasViewedTicket] = useState(false);
   const [hasViewedTimetable, setHasViewedTimetable] = useState(false);
   const [hasPunchCard, setHasPunchCard] = useState(false);
+  const [discoveredWord, setDiscoveredWord] = useState('');
 
   // Hotspot definitions with interaction handlers
   const hotspots = [
     {
-      id: 'ticket-timetable',
-      title: 'Ticket & Timetable',
-      description: 'A train ticket and departure board are visible here',
+      id: 'ticket',
+      title: 'Train Ticket',
+      description: 'Your boarding pass with seat and destination information',
       position: { top: '20%', left: '15%' },
       available: true,
-      completed: hasViewedTicket && hasViewedTimetable,
+      completed: hasViewedTicket,
       onClick: () => setTicketModalOpen(true)
+    },
+    {
+      id: 'window',
+      title: 'Window Timetable',
+      description: 'The departure board visible through the train window',
+      position: { top: '30%', left: '85%' },
+      available: true,
+      completed: hasViewedTimetable,
+      onClick: () => setTimetableModalOpen(true)
     },
     {
       id: 'suitcase',
@@ -49,20 +61,20 @@ export default function NightTrainCompartmentRoom() {
       onClick: () => setSuitcaseModalOpen(true)
     },
     {
-      id: 'window',
-      title: 'Window View',
-      description: 'The train window shows the passing countryside',
-      position: { top: '30%', left: '85%' },
-      available: true,
-      completed: false,
-      onClick: () => setTimetableModalOpen(true)
+      id: 'punch-card-station',
+      title: 'Overlay Alignment Station',
+      description: 'Station for aligning the punch-card overlay with timetable data',
+      position: { top: '50%', left: '25%' },
+      available: hasPunchCard,
+      completed: !!discoveredWord,
+      onClick: () => setPunchCardModalOpen(true)
     },
     {
       id: 'intercom',
       title: 'Intercom Panel',
       description: 'Communication system to contact the conductor',
       position: { top: '40%', left: '5%' },
-      available: hasPunchCard,
+      available: !!discoveredWord,
       completed: false,
       onClick: () => accessibility.announce('Intercom system - functionality coming soon')
     },
@@ -83,13 +95,13 @@ export default function NightTrainCompartmentRoom() {
   };
 
   // Event handlers for puzzle interactions
-  const handleTicketView = () => {
+  const handleTicketClose = () => {
     setHasViewedTicket(true);
     setTicketModalOpen(false);
     accessibility.announce('Ticket examined. Seat B/12 in Coach C, destination Arden. Check the timetable for platform information.');
   };
 
-  const handleTimetableView = () => {
+  const handleTimetableClose = () => {
     setHasViewedTimetable(true);
     setTimetableModalOpen(false);
     accessibility.announce('Timetable examined. Arden departs from Platform 5 at 22:10. You now have the information needed for the suitcase lock.');
@@ -99,17 +111,24 @@ export default function NightTrainCompartmentRoom() {
     setSuitcaseUnlocked(true);
     setHasPunchCard(true);
     setSuitcaseModalOpen(false);
-    accessibility.announce('Suitcase unlocked! You have found a punch-card overlay inside. This can be used with the timetable board.');
+    accessibility.announce('Suitcase unlocked! You have found a punch-card overlay inside. Use it at the alignment station to reveal a hidden word.');
+  };
+
+  const handlePunchCardSuccess = (word: string) => {
+    setDiscoveredWord(word);
+    setPunchCardModalOpen(false);
+    accessibility.announce(`Excellent! You have discovered the word "${word}" by aligning the punch-card overlay. This word can be used with the intercom system.`);
   };
 
   const getCompletedPuzzles = () => {
     let completed = 0;
     if (hasViewedTicket && hasViewedTimetable) completed++;
     if (suitcaseUnlocked) completed++;
+    if (discoveredWord) completed++;
     return completed;
   };
 
-  const getTotalPuzzles = () => 3; // Ticket/Timetable + Suitcase + Final (coming in next stories)
+  const getTotalPuzzles = () => 3; // Ticket/Timetable + Suitcase + Punch-card
 
   if (!gameStarted) {
     return (
@@ -146,7 +165,7 @@ export default function NightTrainCompartmentRoom() {
   // Check if all current puzzles are completed
   const completedPuzzles = getCompletedPuzzles();
   const totalPuzzles = getTotalPuzzles();
-  const isComplete = completedPuzzles >= 2; // For now, complete after first 2 puzzles
+  const isComplete = completedPuzzles >= 3; // Complete after all 3 puzzles
 
   if (isComplete) {
     return (
@@ -168,6 +187,7 @@ export default function NightTrainCompartmentRoom() {
               <li>• Ticket examination: ✓ Completed</li>
               <li>• Timetable analysis: ✓ Completed</li>
               <li>• Suitcase puzzle: ✓ Solved</li>
+              <li>• Punch-card alignment: {discoveredWord ? `✓ Word "${discoveredWord}" discovered` : '⏳ Pending'}</li>
               <li>• Accessibility features used: Multiple</li>
             </ul>
           </div>
@@ -180,6 +200,11 @@ export default function NightTrainCompartmentRoom() {
               setHasViewedTicket(false);
               setHasViewedTimetable(false);
               setHasPunchCard(false);
+              setDiscoveredWord('');
+              setPunchCardModalOpen(false);
+              setTicketModalOpen(false);
+              setTimetableModalOpen(false);
+              setSuitcaseModalOpen(false);
             }} size="lg">
               Play Again
             </Button>
@@ -219,9 +244,11 @@ export default function NightTrainCompartmentRoom() {
             </h2>
             <p className="text-gray-300 mb-6 leading-relaxed">
               You are in a vintage train compartment. Click on the interactive hotspots below to examine objects and solve puzzles.
-              {!hasViewedTicket && " Start by examining your ticket and the departure board."}
-              {hasViewedTicket && hasViewedTimetable && !suitcaseUnlocked && " Use the information from your ticket and timetable to unlock the suitcase."}
-              {suitcaseUnlocked && " Great! You've found the punch-card overlay. More puzzles coming soon..."}
+              {!hasViewedTicket && !hasViewedTimetable && " Start by examining your ticket and the timetable through the window."}
+              {(hasViewedTicket || hasViewedTimetable) && !(hasViewedTicket && hasViewedTimetable) && " Examine both the ticket and timetable to gather all needed information."}
+              {hasViewedTicket && hasViewedTimetable && !suitcaseUnlocked && " Use the seat number (512) to unlock the suitcase."}
+              {suitcaseUnlocked && !discoveredWord && " Use the punch-card overlay at the alignment station to reveal a hidden word."}
+              {discoveredWord && " Excellent! Use the discovered word with the intercom system."}
             </p>
 
             {/* Compartment Visual with Hotspots */}
@@ -265,10 +292,12 @@ export default function NightTrainCompartmentRoom() {
 
             {/* Current Status */}
             <div className="text-sm text-gray-400">
-              {!hasViewedTicket && "Click the ticket area to begin your investigation."}
-              {hasViewedTicket && !hasViewedTimetable && "Good! Now check the timetable to find platform information."}
-              {hasViewedTicket && hasViewedTimetable && !suitcaseUnlocked && "Perfect! You have both pieces of information. Try the suitcase lock."}
-              {suitcaseUnlocked && "Excellent work! You've solved the first puzzle and obtained the punch-card overlay."}
+              {!hasViewedTicket && !hasViewedTimetable && "Click the yellow hotspots to examine objects and gather clues."}
+              {(hasViewedTicket && !hasViewedTimetable) && "Good! Now check the window timetable for platform information."}
+              {(!hasViewedTicket && hasViewedTimetable) && "Good! Now examine your ticket for seat details."}
+              {hasViewedTicket && hasViewedTimetable && !suitcaseUnlocked && "Perfect! Platform 5 + Seat 12 = combination 512. Try the suitcase."}
+              {suitcaseUnlocked && !discoveredWord && "Great! Use the punch-card overlay at the alignment station."}
+              {discoveredWord && "Excellent! Now contact the conductor via the intercom."}
             </div>
           </div>
 
@@ -305,10 +334,12 @@ export default function NightTrainCompartmentRoom() {
                   Current Objective:
                 </h4>
                 <p className="text-blue-300 text-sm">
-                  {!hasViewedTicket && "Examine your train ticket"}
-                  {hasViewedTicket && !hasViewedTimetable && "Check the departure timetable"}
-                  {hasViewedTicket && hasViewedTimetable && !suitcaseUnlocked && "Use seat + platform numbers for suitcase lock"}
-                  {suitcaseUnlocked && "More puzzles coming in next stories!"}
+                  {!hasViewedTicket && !hasViewedTimetable && "Examine your train ticket and departure timetable"}
+                  {(hasViewedTicket && !hasViewedTimetable) && "Check the departure timetable through the window"}
+                  {(!hasViewedTicket && hasViewedTimetable) && "Examine your train ticket"}
+                  {hasViewedTicket && hasViewedTimetable && !suitcaseUnlocked && "Enter combination 512 to unlock suitcase"}
+                  {suitcaseUnlocked && !discoveredWord && "Use punch-card overlay at alignment station"}
+                  {discoveredWord && "Contact conductor via intercom (Story 3 coming soon)"}
                 </p>
               </div>
 
@@ -331,18 +362,24 @@ export default function NightTrainCompartmentRoom() {
       {/* Modal Components */}
       <TicketModal
         isOpen={ticketModalOpen}
-        onClose={handleTicketView}
+        onClose={handleTicketClose}
       />
 
       <TimetableModal
         isOpen={timetableModalOpen}
-        onClose={handleTimetableView}
+        onClose={handleTimetableClose}
       />
 
       <SuitcaseLockModal
         isOpen={suitcaseModalOpen}
         onClose={() => setSuitcaseModalOpen(false)}
         onSuccess={handleSuitcaseUnlock}
+      />
+
+      <PunchCardOverlayModal
+        isOpen={punchCardModalOpen}
+        onClose={() => setPunchCardModalOpen(false)}
+        onSuccess={handlePunchCardSuccess}
       />
     </div>
   );

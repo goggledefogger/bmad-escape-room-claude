@@ -22,7 +22,7 @@ export function SuitcaseLockModal({ isOpen, onClose, onSuccess }: SuitcaseLockMo
   const [lastAttemptTime, setLastAttemptTime] = useState(0);
 
   const accessibility = useAccessibility();
-  const correctCombination = ['1', '2', '5']; // Seat row (12) + Platform (5) = 125
+  const correctCombination = ['5', '1', '2']; // Platform 5, Seat 12 = digits 1 and 2
 
   const updateDigit = (index: number, value: string) => {
     if (value.length <= 1 && /^\d*$/.test(value)) {
@@ -177,12 +177,23 @@ export function SuitcaseLockModal({ isOpen, onClose, onSuccess }: SuitcaseLockMo
           </p>
         </div>
 
-        {/* Hint */}
+                {/* Hint */}
         <div className="bg-blue-900 border border-blue-700 rounded p-4 mb-4">
-          <p className="text-blue-200 text-sm">
-            💡 <strong>Hint:</strong> Check your ticket and the timetable board.
-            The combination might be related to your seat and platform information.
+          <p className="text-blue-200 text-sm mb-2">
+            💡 <strong>Hint:</strong> Look at your ticket and the departure board for important numbers.
           </p>
+
+          {attempts > 0 && (
+            <p className="text-yellow-300 text-xs mt-2">
+              🎯 <strong>Focus on:</strong> Where you're sitting and where you're departing from.
+            </p>
+          )}
+
+          {attempts > 2 && (
+            <p className="text-green-300 text-xs mt-3 font-bold">
+              🔍 <strong>Solution:</strong> Platform <strong>5</strong>, Seat <strong>12</strong> = <strong>512</strong>
+            </p>
+          )}
         </div>
 
         <Button variant="secondary" onClick={onClose} className="w-full">
