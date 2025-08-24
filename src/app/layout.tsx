@@ -30,12 +30,6 @@ export const metadata: Metadata = {
   authors: [{ name: "BMad" }],
   creator: "BMad",
   publisher: "BMad",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
   robots: {
     index: true,
     follow: true,
@@ -60,6 +54,14 @@ export const metadata: Metadata = {
     title: "BMad Escape Room - Night Train Experience",
     description: "An accessible digital escape room experience with full WCAG compliance",
   },
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: "#1e293b",
 };
 
 export default function RootLayout({

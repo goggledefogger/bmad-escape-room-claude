@@ -11,9 +11,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-/* OpenDyslexic font for accessibility (temporarily disabled to avoid 404) */
-/* TODO: Add OpenDyslexic font file to /public/fonts/ */
-/*
+/* OpenDyslexic font for accessibility */
 @font-face {
   font-family: 'OpenDyslexic';
   src: url('/fonts/OpenDyslexic-Regular.woff2') format('woff2');
@@ -21,7 +19,6 @@
   font-style: normal;
   font-display: swap;
 }
-*/
 
 /* CSS Custom Properties for accessibility */
 :root {
@@ -35,7 +32,7 @@
   /* Font families */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Monaco', 'Cascadia Code', monospace;
-  --font-dyslexic: 'Comic Sans MS', 'Trebuchet MS', cursive;
+  --font-dyslexic: 'OpenDyslexic', 'Comic Sans MS', 'Trebuchet MS', cursive;
 
   /* Focus styles */
   --focus-ring: 0 0 0 2px var(--color-accent-600);

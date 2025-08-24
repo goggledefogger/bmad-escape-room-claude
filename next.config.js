@@ -8,7 +8,7 @@ await import("./src/env.js");
 const config = {
   experimental: {
     // Enable optimizations for accessibility features
-    optimizeCss: true,
+    // optimizeCss: true, // Temporarily disabled due to critters dependency issue
     scrollRestoration: true,
   },
 

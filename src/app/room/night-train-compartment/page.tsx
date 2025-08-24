@@ -44,8 +44,12 @@ export default function NightTrainCompartmentRoom() {
 
   const nextStep = () => {
     if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-      accessibility.announce(`Moving to ${steps[currentStep + 1].title}`);
+      const nextStepIndex = currentStep + 1;
+      setCurrentStep(nextStepIndex);
+      const nextStepData = steps[nextStepIndex];
+      if (nextStepData) {
+        accessibility.announce(`Moving to ${nextStepData.title}`);
+      }
     } else {
       accessibility.announce("Congratulations! You have escaped the Night Train Compartment!");
     }
@@ -145,14 +149,14 @@ export default function NightTrainCompartmentRoom() {
           {/* Scene description */}
           <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
             <h2 className="text-xl font-bold mb-4 text-yellow-400">
-              {currentStepData.title}
+              {currentStepData?.title || "Unknown Step"}
             </h2>
             <p className="text-gray-300 mb-6 leading-relaxed">
-              {currentStepData.description}
+              {currentStepData?.description || "No description available"}
             </p>
 
             <Button onClick={nextStep} className="w-full touch-target">
-              {currentStepData.action}
+              {currentStepData?.action || "Continue"}
             </Button>
           </div>
 

@@ -137,11 +137,14 @@ const useAccessibilityStore = create<AccessibilityStore>((set, get) => ({
     const highContrastQuery = window.matchMedia('(prefers-contrast: high)');
     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
+    const colorScheme: 'light' | 'dark' | 'high-contrast' =
+      darkModeQuery.matches ? 'dark' :
+      highContrastQuery.matches ? 'high-contrast' : 'light';
+
     const mediaContext = {
       reducedMotion: reducedMotionQuery.matches,
       highContrast: highContrastQuery.matches,
-      colorScheme: darkModeQuery.matches ? 'dark' :
-                  highContrastQuery.matches ? 'high-contrast' : 'light',
+      colorScheme,
     };
 
     set({
